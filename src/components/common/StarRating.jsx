@@ -1,0 +1,21 @@
+import React from 'react';
+
+const StarRating = ({ rating, setRating }) => {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={`cursor-pointer text-2xl ${
+            star <= rating ? "text-yellow-400" : "text-gray-300"
+          }`}
+          onClick={() => setRating(star)}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+};
+
+export default StarRating;
