@@ -1,40 +1,46 @@
-name: S3+CloudFront Deployment
+name: Frontend Deployment (S3 + CloudFront)
 
 on:
   push:
     branches:
-      - main  # 메인 브랜치에 푸시될 때 실행
+      - main  # 배포를 원하는 브랜치명으로 수정 가능
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       # 1. 소스 코드 가져오기
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. 의존성 설치 및 빌드
-      - name: Install Dependencies and Build
+      # 2. Node.js 환경 세팅
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3. 의존성 설치 및 빌드 (Vite 빌드 결과물은 dist/ 폴더)
+      - name: Install and Build
         run: |
           npm install
           npm run build
 
-      # 3. AWS 자격 증명 설정
+      # 4. AWS 자격 증명 설정
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2 # 본인의 리전
+          aws-region: ap-northeast-2 # 본인의 S3 리전으로 수정
 
-      # 4. S3로 빌드 파일 업로드
-      - name: Deploy to S3
+      # 5. S3 버킷으로 파일 업로드
+      - name: Sync S3
         run: |
-          aws s3 sync ./dist s3://본인의-버킷-이름 --delete
-          # 빌드 결과물이 build/ 폴더면 ./dist 대신 ./build 사용
+          aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
 
-      # 5. CloudFront 캐시 무효화 (사용자가 즉시 새 버전을 보게 함)
+      # 6. CloudFront 캐시 무효화
       - name: CloudFront Invalidation
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/*"
