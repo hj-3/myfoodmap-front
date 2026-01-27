@@ -1,0 +1,40 @@
+name: S3+CloudFront Deployment
+
+on:
+  push:
+    branches:
+      - main  # 메인 브랜치에 푸시될 때 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 소스 코드 가져오기
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 2. 의존성 설치 및 빌드
+      - name: Install Dependencies and Build
+        run: |
+          npm install
+          npm run build
+
+      # 3. AWS 자격 증명 설정
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2 # 본인의 리전
+
+      # 4. S3로 빌드 파일 업로드
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./dist s3://본인의-버킷-이름 --delete
+          # 빌드 결과물이 build/ 폴더면 ./dist 대신 ./build 사용
+
+      # 5. CloudFront 캐시 무효화 (사용자가 즉시 새 버전을 보게 함)
+      - name: CloudFront Invalidation
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
