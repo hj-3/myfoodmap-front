@@ -1,7 +1,7 @@
 // frontend/src/pages/Signup.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
-import axios from "axios"; // axios 임포트
+import apiClient from "../api/axios"; // apiClient 임포트
 
 export default function Signup() {
   const navigate = useNavigate(); // 페이지 이동을 위한 hook
@@ -24,7 +24,7 @@ export default function Signup() {
     
     try {
       // 백엔드에 중복 체크 요청
-      const res = await axios.get(`http://localhost:3000/api/auth/check-username/${formData.username}`);
+      const res = await apiClient.get(`/auth/check-username/${formData.username}`);
       
       if (res.data.available) {
         setIsUsernameAvailable(true); 
@@ -55,7 +55,7 @@ export default function Signup() {
     
     try {
       // 백엔드 회원가입 API 호출
-      const res = await axios.post('http://localhost:3000/api/auth/signup', {
+      const res = await apiClient.post('/auth/signup', {
         username: formData.username,
         nickname: formData.nickname,
         password: formData.password

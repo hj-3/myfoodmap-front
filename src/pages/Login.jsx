@@ -18,11 +18,15 @@ export default function Login() {
         password,
       });
 
-      alert(res.data.message);
-      console.log("로그인 성공, 유저 정보:", res.data.user);
+      // 응답 데이터에서 토큰과 사용자 정보 추출
+      const { token, user, message } = res.data;
 
-      // 브라우저에 유저 정보 저장
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      alert(message);
+      console.log("로그인 성공, 유저 정보:", user);
+      
+      // 토큰과 사용자 정보를 sessionStorage에 저장
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("user", JSON.stringify(user));
 
       // 성공하면 홈으로 이동
       navigate("/");
