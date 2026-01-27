@@ -1,0 +1,51 @@
+name: Frontend Deployment (S3 + CloudFront)
+
+on:
+  push:
+    branches:
+      - main  # 배포를 원하는 브랜치명으로 수정 가능
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 소스 코드 가져오기
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Node.js 환경 세팅
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # .env 생성
+      - name: Create .env file
+        run: |
+          echo "VITE_KAKAO_MAP_KEY=${{ secrets.VITE_KAKAO_MAP_KEY }}" >> .env
+
+      # 3. 의존성 설치 및 빌드 (Vite 빌드 결과물은 dist/ 폴더)
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+
+      # 4. AWS 자격 증명 설정
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2 # 본인의 S3 리전으로 수정
+
+      # 5. S3 버킷으로 파일 업로드
+      - name: Sync S3
+        run: |
+          aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
+
+      # 6. CloudFront 캐시 무효화
+      - name: CloudFront Invalidation
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/*"
