@@ -12,6 +12,7 @@ const WriteReviewModal = ({ isOpen, onClose, onSubmit, place, editingReview }) =
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -55,15 +56,26 @@ const WriteReviewModal = ({ isOpen, onClose, onSubmit, place, editingReview }) =
     setReviewData(prev => ({ ...prev, rating: newRating }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      reviewData,
-      selectedFile,
-      place, // Pass the selected place for new reviews
-      editingReviewId: editingReview ? editingReview.id : null,
-    });
-    // Closing the modal should be handled by the parent after submission is successful
+    
+    // 필수 입력 항목 검증
+    if (!reviewData.menu.trim() || !String(reviewData.price).trim() || !reviewData.text.trim()) {
+      alert("메뉴, 가격, 내용은 필수 입력 항목입니다.");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await onSubmit({
+        reviewData,
+        selectedFile,
+        place,
+        editingReviewId: editingReview ? editingReview.id : null,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleClose = () => {
@@ -127,7 +139,10 @@ const WriteReviewModal = ({ isOpen, onClose, onSubmit, place, editingReview }) =
 
           <textarea placeholder="리뷰를 남겨주세요!" name="text" className="w-full border p-3 rounded-lg bg-gray-50 text-sm h-24 resize-none outline-none focus:bg-white focus:border-blue-400 text-left" value={reviewData.text} onChange={handleInputChange} />
 
-          <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 transition transform active:scale-95 shadow-lg">
+          <button type="submit" disabled={isLoading} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 transition transform active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            {isLoading && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
             {editingReview ? "수정완료" : "저장하기"}
           </button>
         </form>
