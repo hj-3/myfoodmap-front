@@ -4,7 +4,7 @@ import apiClient from '../api/axios';
 export default function useReviews(user) {
   const [myReviews, setMyReviews] = useState([]);
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
-  
+
   
   const fetchMyReviews = async (username) => {
     try {
@@ -101,13 +101,15 @@ export default function useReviews(user) {
           rating: reviewData.rating,
           content: reviewData.text,
           menuName: reviewData.menu,
-          price: parseInt(reviewData.price) || 0,
+          price: parseInt(String(reviewData.price).replace(/[^0-9]/g, "")) || 0,
           visitDate: `${reviewData.visitDate}T12:00:00.000Z`,
           // Note: Image URL is not updated here, but it could be.
           // The current logic only uploads a new image, it doesn't replace an existing one
           // unless we re-upload. The logic for image handling might need refinement.
+          imageUrl: imageUrl
         });
         alert("리뷰가 수정되었습니다!");
+        setEditingReview(null);
       } catch (err) {
         alert(err.response?.data?.message || "리뷰 수정 중 오류가 발생했습니다.");
         return; // Stop on error
