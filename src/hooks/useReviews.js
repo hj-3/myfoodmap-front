@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
 
-export default function useReviews(user) {
+export default function useReviews(user, startDate, endDate) {
   const [myReviews, setMyReviews] = useState([]);
+  const [reviewStats, setReviewStats] = useState({ totalSpending: 0, averageRating: 0 });
   const [editingReview, setEditingReview] = useState(null); // 수정할 리뷰 데이터
 
   
-  const fetchMyReviews = async (username) => {
+  const fetchMyReviews = async (username, startDate, endDate) => {
     try {
-      const res = await apiClient.get(`/reviews/${username}`);
-      const formattedData = res.data.map(r => {
+      const params = new URLSearchParams();
+      if (startDate) {
+        params.append('startDate', startDate);
+      }
+      if (endDate) {
+        params.append('endDate', endDate);
+      }
+
+      const res = await apiClient.get(`/reviews/${username}`, { params });
+      // res.data is now { reviews: [], stats: {} }
+      const { reviews, stats } = res.data;
+
+      const formattedData = reviews.map(r => {
         let formattedDateString = "";
         if (r.visitDate) {
           const localDate = new Date(r.visitDate);
@@ -34,26 +46,32 @@ export default function useReviews(user) {
         };
       });
       setMyReviews(formattedData);
+      setReviewStats(stats);
     } catch (err) {
       console.error("리뷰 로딩 실패:", err);
       setMyReviews([]); // Clear reviews on error
+      setReviewStats({ totalSpending: 0, averageRating: 0 }); // Clear stats on error
     }
   };
 
   // Fetch reviews when user object changes
   useEffect(() => {
     if (user?.username) {
-      fetchMyReviews(user.username);
+      fetchMyReviews(user.username, startDate, endDate);
     } else {
       setMyReviews([]); // Clear reviews on logout
+      setReviewStats({ totalSpending: 0, averageRating: 0 }); // Clear stats on logout
     }
-  }, [user]);
+  }, [user, startDate, endDate]);
 
   const deleteReview = async (reviewId) => {
     if (!window.confirm("정말로 이 리뷰를 삭제하시겠습니까?")) return;
     try {
       await apiClient.delete(`/reviews/${reviewId}`);
-      setMyReviews(prevReviews => prevReviews.filter(review => review.id !== reviewId));
+      // After deleting, refetch to update list and stats
+      if (user?.username) {
+        fetchMyReviews(user.username, startDate, endDate);
+      }
       alert("리뷰가 삭제되었습니다.");
     } catch (err) {
       alert(err.response?.data?.message || "리뷰 삭제에 실패했습니다.");
@@ -103,10 +121,7 @@ export default function useReviews(user) {
           menuName: reviewData.menu,
           price: parseInt(String(reviewData.price).replace(/[^0-9]/g, "")) || 0,
           visitDate: `${reviewData.visitDate}T12:00:00.000Z`,
-          // Note: Image URL is not updated here, but it could be.
-          // The current logic only uploads a new image, it doesn't replace an existing one
-          // unless we re-upload. The logic for image handling might need refinement.
-          imageUrl: imageUrl
+          imageUrl: imageUrl,
         });
         alert("리뷰가 수정되었습니다!");
         setEditingReview(null);
@@ -138,19 +153,21 @@ export default function useReviews(user) {
         await apiClient.post("/reviews", newReviewPayload);
         alert("리뷰가 저장되었습니다!");
       } catch (err) {
-        alert(err.response?.data?.message || "리뷰 저장 중 오류가 발생했습니다.");
+        const errorMessages = err.response?.data?.errors?.map(e => e.msg).join('\\n');
+        alert(errorMessages || err.response?.data?.message || "리뷰 저장 중 오류가 발생했습니다.");
         return; // Stop on error
       }
     }
 
     // 3. Refresh review list on success
     if (user?.username) {
-      fetchMyReviews(user.username);
+      fetchMyReviews(user.username, startDate, endDate);
     }
   };
 
   return {
     myReviews,
+    reviewStats,
     editingReview,
     startEditReview,
     cancelEditReview,

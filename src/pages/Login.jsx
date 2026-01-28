@@ -1,7 +1,7 @@
 // frontend/src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
-import axios from "axios"; 
+import apiClient from "../api/axios"; 
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -13,7 +13,7 @@ export default function Login() {
     
     try {
       // 백엔드로 로그인 요청
-      const res = await axios.post(`https://${import.meta.env.VITE_BACK_URL}/api/auth/login`, {
+      const res = await apiClient.post("/auth/login", {
         username,
         password,
       });

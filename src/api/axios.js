@@ -25,4 +25,19 @@ apiClient.interceptors.request.use(
   }
 );
 
+// 응답 인터셉터 추가 - 토큰 만료 처리
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403) {
+      // 토큰 만료 시
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      window.location.href = '/login';
+      alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default apiClient;

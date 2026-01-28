@@ -16,8 +16,12 @@ function Home() {
   // Authentication & User
   const { user, logout } = useAuth();
 
+  // Date filter state
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   // Review data and logic
-  const { myReviews, editingReview, startEditReview, cancelEditReview, deleteReview, submitReview } = useReviews(user);
+  const { myReviews, reviewStats, editingReview, startEditReview, cancelEditReview, deleteReview, submitReview } = useReviews(user, startDate, endDate);
 
   // Map and Place Search
   const { map, setMap, keyword, setKeyword, places, setPlaces, searchPlaces } = useMapSearch();
@@ -98,6 +102,11 @@ function Home() {
         onReviewSelect={handleSelectReviewOnMap}
         onEdit={handleEditReview}
         onDelete={deleteReview}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        stats={reviewStats}
       />
 
       <MapContainer

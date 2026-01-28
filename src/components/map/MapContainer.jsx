@@ -105,15 +105,19 @@ const MapContainer = ({
               </div>
               {reviewToShow.imageUrl && <img src={reviewToShow.imageUrl} alt={reviewToShow.name} className="w-full h-40 object-cover rounded-md mb-3 bg-black" />}
               <div className="text-xs border-b border-gray-100 pb-2 last:border-none">
-                 <div className="flex justify-between font-bold text-blue-600 mb-1">
-                   <span>방문 #{currentReviewIndex + 1}</span>
-                   <span className="text-yellow-400 text-[10px]">★ {reviewToShow.rating}</span>
-                   <button onClick={() => onEditReview(reviewToShow)} className="text-[10px] text-gray-400 underline hover:text-blue-600 ml-2">수정</button>
-                   <span className="text-[9px] text-gray-400 font-normal">{reviewToShow.date}</span>
-                 </div>
-                 <p className="font-semibold text-gray-800">{reviewToShow.menu} ({reviewToShow.price?.toLocaleString()}원)</p>
-                 <p className="text-gray-500 italic leading-snug">"{reviewToShow.text}"</p>
-               </div>
+                <div className="flex justify-between items-start font-bold text-blue-600 mb-1">
+                  <div>
+                    <span>방문 #{currentReviewIndex + 1}</span>
+                    <p className="text-[9px] text-gray-400 font-normal">{reviewToShow.date}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-yellow-400 text-[10px] mr-2">★ {reviewToShow.rating}</span>
+                    <button onClick={() => onEditReview(reviewToShow)} className="text-[10px] text-gray-400 underline hover:text-blue-600">수정</button>
+                  </div>
+                </div>
+                <p className="font-semibold text-gray-800 mt-2">{reviewToShow.menu} ({reviewToShow.price?.toLocaleString()}원)</p>
+                <p className="text-gray-500 italic leading-snug">"{reviewToShow.text}"</p>
+              </div>
               {reviewsForLocation.length > 1 && (
                 <div className="flex justify-between mt-2">
                   <button onClick={() => setCurrentReviewIndex(prev => prev > 0 ? prev - 1 : reviewsForLocation.length - 1)} className="text-xs font-bold text-gray-600 hover:text-black">이전</button>
