@@ -13,7 +13,7 @@ export default function Login() {
     
     try {
       // 백엔드로 로그인 요청
-      const res = await axios.post("http://${import.meta.env.VITE_BACK_URL}/api/auth/login", {
+      const res = await axios.post("https://${import.meta.env.VITE_BACK_URL}/api/auth/login", {
         username,
         password,
       });
