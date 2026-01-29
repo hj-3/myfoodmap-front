@@ -58,4 +58,4 @@
 **[리뷰 삭제]**
 
 ## 7. 주요 페이지
-<img width="200" height="350" alt="Image" src="https://github.com/user-attachments/assets/f28c2eae-6bc0-4de8-b2fd-73f3932b77d3" />
+<img width="200" height="350" alt="Image" src="https://github.com/user-attachments/assets/f28c2eae-6bc0-4de8-b2fd-73f3932b77d3" /><img width="200" height="350" alt="Image" src="https://github.com/user-attachments/assets/905c4395-68f0-4d62-98c6-e0756a1c6bd6" />
