@@ -9,14 +9,14 @@
   
 ## 2. 기술  스택
 **Frontend**
-  - Languege: Javascript, HTML5, CSS3
-  - Library & Framework: React, Vite
-  - CI/CD: Github Actions, Amazon S3, AWS CloudFront
+  - **Languege**: Javascript, HTML5, CSS3
+  - **Library & Framework**: React, Vite
+  - **CI/CD**: Github Actions, Amazon S3, AWS CloudFront
 
 **Backend**
-  - Library & Framework: Node.js, Express.js
-  - Database: MySQL, Prisma(ORM)
-  - CI/CD: Github Actions, Amazon S3, AWS CodeDeploy
+  - **Library & Framework**: Node.js, Express.js
+  - **Database**: MySQL, Prisma(ORM)
+  - **CI/CD**: Github Actions, Amazon S3, AWS CodeDeploy
 
 **Collaboration**
   - Github, Slack, Notion
@@ -31,3 +31,25 @@
 <img width="3539" height="1256" alt="Image" src="https://github.com/user-attachments/assets/a7d205bb-e0ae-42c5-90f1-523fcc1ea014" />
 
 ## 6. 주요 기능
+**[회원가입/로그인]**
+  - 아이디, 닉네임, 비밀번호를 입력하여 회원가입
+  - JWT 인증 방식을 통한 로그인 방식 구현
+
+**[검색]**
+  - "지역 + 메뉴" 키워트를 통해 음식점 검색
+  - 검색 결과는 빨간 마커로 표시
+  - KakaoMap API를 통해 지도, 지도 검색 구현
+  - 식당을 선택하면 식당에 대한 간단한 정보와 상세 정보로 이어지는 버튼, 리뷰 버튼 출력
+
+**[리뷰 작성]**
+  - 방문일자, 이미지, 평점, 메뉴명, 가격, 리뷰 입력
+  - 이미지를 제외한 항목은 필수
+  - 리뷰를 작성한 식당은 지도에 노란 별 마커로 표시
+
+**[리뷰 조회]**
+  - 기본적으로 모든 기간의 리뷰 조회
+  - 기간 별 조회 가능
+  - 기간 내 통계 정보 요약 (리뷰 수, 방문 식당 수, 총 지출, 평균 평점)
+  - 리뷰 정렬 기능 (최신순, 가격순, 평점순)
+  - 리뷰 목록에서 리뷰 선택하면 리뷰 상세로 이동
+
