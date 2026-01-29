@@ -57,3 +57,5 @@
 
 **[리뷰 삭제]**
 
+## 7. 주요 페이지
+<img width="494" height="1083" alt="Image" src="https://github.com/user-attachments/assets/f28c2eae-6bc0-4de8-b2fd-73f3932b77d3" />
